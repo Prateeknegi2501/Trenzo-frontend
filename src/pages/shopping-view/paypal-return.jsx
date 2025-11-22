@@ -3,8 +3,10 @@ import { capturePayment } from "@/store/shop/order-slice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function PaypalReturnPage() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -18,7 +20,7 @@ function PaypalReturnPage() {
       dispatch(capturePayment({ paymentId, payerId, orderId })).then((data) => {
         if (data?.payload?.success) {
           sessionStorage.removeItem("currentOrderId");
-          window.location.href = "/shop/payment-success";
+          navigate("/shop/payment-success");
         }
       });
     }

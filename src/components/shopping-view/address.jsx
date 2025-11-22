@@ -101,7 +101,10 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
 
   function isFormValid() {
     return Object.keys(formData)
-      .map((key) => formData[key].trim() !== "")
+      .map((key) => {
+        if (key === "notes") return true;
+        return formData[key].trim() !== "";
+      })
       .every((item) => item);
   }
 
@@ -109,7 +112,6 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
     dispatch(fetchAllAddresses(user?.id));
   }, [dispatch]);
 
-  console.log(addressList, "addressList");
 
   return (
     <Card>

@@ -31,6 +31,7 @@ function CommonForm({
             id={getControlItem.name}
             type={getControlItem.type}
             value={value}
+            maxLength={getControlItem.maxLength}
             onChange={(event) =>
               setFormData({
                 ...formData,

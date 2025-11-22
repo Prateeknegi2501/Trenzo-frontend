@@ -81,8 +81,9 @@ function ShoppingCheckout() {
       payerId: "",
     };
 
+    console.log("****order Data****", orderData);
     dispatch(createNewOrder(orderData)).then((data) => {
-      console.log(data, "sangam");
+      console.log("****new Order****", data);
       if (data?.payload?.success) {
         setIsPaymemntStart(true);
       } else {

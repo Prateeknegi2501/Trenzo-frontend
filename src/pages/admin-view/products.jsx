@@ -92,7 +92,10 @@ function AdminProducts() {
   function isFormValid() {
     return Object.keys(formData)
       .filter((currentKey) => currentKey !== "averageReview")
-      .map((key) => formData[key] !== "")
+      .map((key) => {
+        if (key === "salePrice") return true;
+        return formData[key] !== "";
+      })
       .every((item) => item);
   }
 

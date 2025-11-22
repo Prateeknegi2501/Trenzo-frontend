@@ -39,6 +39,15 @@ function AuthLogin() {
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Sign in to your account
         </h1>
+      </div>
+      <CommonForm
+        formControls={loginFormControls}
+        buttonText={"Sign In"}
+        formData={formData}
+        setFormData={setFormData}
+        onSubmit={onSubmit}
+      />
+      <div className="text-center">
         <p className="mt-2">
           Don't have an account
           <Link
@@ -49,13 +58,6 @@ function AuthLogin() {
           </Link>
         </p>
       </div>
-      <CommonForm
-        formControls={loginFormControls}
-        buttonText={"Sign In"}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={onSubmit}
-      />
     </div>
   );
 }

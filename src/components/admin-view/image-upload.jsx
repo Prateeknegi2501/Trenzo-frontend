@@ -5,6 +5,8 @@ import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { Skeleton } from "../ui/skeleton";
+import { toast } from "../ui/use-toast";
+import imageCompression from "browser-image-compression";
 
 function ProductImageUpload({
   imageFile,
@@ -46,17 +48,43 @@ function ProductImageUpload({
   }
 
   async function uploadImageToCloudinary() {
-    setImageLoadingState(true);
-    const data = new FormData();
-    data.append("my_file", imageFile);
-    const response = await axios.post(
-      "http://localhost:5000/api/admin/products/upload-image",
-      data
-    );
-    console.log(response, "response");
+    if (!imageFile) return;
 
-    if (response?.data?.success) {
-      setUploadedImageUrl(response.data.result.url);
+    setImageLoadingState(true);
+
+    try {
+      // Compress image first
+      const compressedFile = await imageCompression(imageFile, {
+        maxSizeMB: 1, // target ~1MB
+        maxWidthOrHeight: 1920, // resize if bigger
+        useWebWorker: true,
+      });
+
+      const data = new FormData();
+      data.append("my_file", compressedFile);
+
+      // Upload to server
+      const response = await axios.post(
+        "http://localhost:5000/api/admin/products/upload-image",
+        data
+      );
+
+      if (response.data.success) {
+        setUploadedImageUrl(response.data.result.url);
+        toast({ title: "Image uploaded successfully!" });
+      } else {
+        toast({ title: "Upload failed", variant: "destructive" });
+        setImageFile(null);
+        if (inputRef.current) inputRef.current.value = "";
+      }
+    } catch (error) {
+      toast({
+        title: error?.response?.data?.message || "Upload failed",
+        variant: "destructive",
+      });
+      setImageFile(null);
+      if (inputRef.current) inputRef.current.value = "";
+    } finally {
       setImageLoadingState(false);
     }
   }

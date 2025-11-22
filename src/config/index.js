@@ -193,6 +193,7 @@ export const addressFormControls = [
     componentType: "input",
     type: "text",
     placeholder: "Enter your address",
+    maxLength: 35,
   },
   {
     label: "City",
@@ -200,6 +201,7 @@ export const addressFormControls = [
     componentType: "input",
     type: "text",
     placeholder: "Enter your city",
+    maxLength: 35,
   },
   {
     label: "Pincode",
@@ -207,6 +209,7 @@ export const addressFormControls = [
     componentType: "input",
     type: "text",
     placeholder: "Enter your pincode",
+    maxLength: 6,
   },
   {
     label: "Phone",
@@ -214,6 +217,7 @@ export const addressFormControls = [
     componentType: "input",
     type: "text",
     placeholder: "Enter your phone number",
+    maxLength: 14,
   },
   {
     label: "Notes",
