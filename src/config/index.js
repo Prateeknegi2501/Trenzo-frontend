@@ -137,11 +137,7 @@ export const shoppingViewHeaderMenuItems = [
     label: "Accessories",
     path: "/shop/listing",
   },
-  {
-    id: "search",
-    label: "Search",
-    path: "/shop/search",
-  },
+ 
 ];
 
 export const categoryOptionsMap = {
@@ -162,14 +158,14 @@ export const brandOptionsMap = {
 };
 
 export const filterOptions = {
-  category: [
+  Category: [
     { id: "men", label: "Men" },
     { id: "women", label: "Women" },
     { id: "kids", label: "Kids" },
     { id: "accessories", label: "Accessories" },
     { id: "footwear", label: "Footwear" },
   ],
-  brand: [
+  Brand: [
     { id: "nike", label: "Nike" },
     { id: "adidas", label: "Adidas" },
     { id: "puma", label: "Puma" },

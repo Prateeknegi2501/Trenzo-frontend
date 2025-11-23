@@ -1,4 +1,4 @@
-import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
+import { FileIcon, UploadCloudIcon, XIcon, ImageIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useEffect, useRef } from "react";
@@ -20,31 +20,15 @@ function ProductImageUpload({
 }) {
   const inputRef = useRef(null);
 
-  console.log(isEditMode, "isEditMode");
-
   function handleImageFileChange(event) {
-    console.log(event.target.files, "event.target.files");
     const selectedFile = event.target.files?.[0];
-    console.log(selectedFile);
-
     if (selectedFile) setImageFile(selectedFile);
-  }
-
-  function handleDragOver(event) {
-    event.preventDefault();
-  }
-
-  function handleDrop(event) {
-    event.preventDefault();
-    const droppedFile = event.dataTransfer.files?.[0];
-    if (droppedFile) setImageFile(droppedFile);
   }
 
   function handleRemoveImage() {
     setImageFile(null);
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
+    setUploadedImageUrl("");
+    if (inputRef.current) inputRef.current.value = "";
   }
 
   async function uploadImageToCloudinary() {
@@ -53,17 +37,15 @@ function ProductImageUpload({
     setImageLoadingState(true);
 
     try {
-      // Compress image first
       const compressedFile = await imageCompression(imageFile, {
-        maxSizeMB: 1, // target ~1MB
-        maxWidthOrHeight: 1920, // resize if bigger
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1400,
         useWebWorker: true,
       });
 
       const data = new FormData();
       data.append("my_file", compressedFile);
 
-      // Upload to server
       const response = await axios.post(
         "http://localhost:5000/api/admin/products/upload-image",
         data
@@ -71,19 +53,12 @@ function ProductImageUpload({
 
       if (response.data.success) {
         setUploadedImageUrl(response.data.result.url);
-        toast({ title: "Image uploaded successfully!" });
-      } else {
-        toast({ title: "Upload failed", variant: "destructive" });
-        setImageFile(null);
-        if (inputRef.current) inputRef.current.value = "";
       }
     } catch (error) {
       toast({
-        title: error?.response?.data?.message || "Upload failed",
+        title: "Upload failed",
         variant: "destructive",
       });
-      setImageFile(null);
-      if (inputRef.current) inputRef.current.value = "";
     } finally {
       setImageLoadingState(false);
     }
@@ -95,15 +70,18 @@ function ProductImageUpload({
 
   return (
     <div
-      className={`w-full  mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}
+      className={`mt-4 ${
+        isCustomStyling ? "w-full" : "max-w-md mx-auto w-full"
+      }`}
     >
-      <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
+      <Label className="text-lg font-semibold mb-2 block">Product Image</Label>
+
       <div
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        className={`${
-          isEditMode ? "opacity-60" : ""
-        } border-2 border-dashed rounded-lg p-4`}
+        className={`
+          group relative border border-muted rounded-xl p-5 bg-white shadow-sm 
+          transition-all duration-200 
+          ${isEditMode ? "opacity-50 cursor-not-allowed" : "hover:shadow-md"}
+        `}
       >
         <Input
           id="image-upload"
@@ -111,35 +89,64 @@ function ProductImageUpload({
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          disabled={isEditMode}
+          disabled={isEditMode }
         />
-        {!imageFile ? (
+
+        {/* Empty State */}
+        {!imageFile && !uploadedImageUrl && !imageLoadingState && (
           <Label
             htmlFor="image-upload"
-            className={`${
-              isEditMode ? "cursor-not-allowed" : ""
-            } flex flex-col items-center justify-center h-32 cursor-pointer`}
+            className="flex flex-col items-center justify-center h-40 cursor-pointer"
           >
-            <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
-            <span>Drag & drop or click to upload image</span>
+            <UploadCloudIcon className="w-12 h-12 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground font-medium">
+              Click to upload or drag & drop
+            </p>
           </Label>
-        ) : imageLoadingState ? (
-          <Skeleton className="h-10 bg-gray-100" />
-        ) : (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <FileIcon className="w-8 text-primary mr-2 h-8" />
+        )}
+
+        {/* Uploading State */}
+        {imageLoadingState && (
+          <div className="flex flex-col items-center justify-center h-40 gap-3">
+            <Skeleton className="h-28 w-28 rounded-xl bg-gray-200" />
+            <Skeleton className="h-4 w-20 bg-gray-200" />
+          </div>
+        )}
+
+        {/* Preview State */}
+        {!imageLoadingState && (uploadedImageUrl || imageFile) && (
+          <div className="flex flex-col items-center gap-4">
+            {/* Image Preview Card */}
+            <div className="w-40 h-40 rounded-xl overflow-hidden border bg-white shadow-inner flex items-center justify-center">
+              {uploadedImageUrl ? (
+                <img
+                  src={uploadedImageUrl}
+                  alt="preview"
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <ImageIcon className="w-10 h-10 text-muted-foreground" />
+              )}
             </div>
-            <p className="text-sm font-medium">{imageFile.name}</p>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={handleRemoveImage}
-            >
-              <XIcon className="w-4 h-4" />
-              <span className="sr-only">Remove File</span>
-            </Button>
+
+            {/* File Info Row */}
+            <div className="w-full flex items-center justify-between bg-muted/30 border rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2">
+                <FileIcon className="w-5 h-5 text-primary" />
+                <p className="text-sm font-medium truncate max-w-[160px]">
+                  {imageFile?.name}
+                </p>
+              </div>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleRemoveImage}
+                className="text-muted-foreground hover:text-red-600"
+              >
+                <XIcon className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         )}
       </div>

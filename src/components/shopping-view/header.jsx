@@ -1,4 +1,11 @@
-import { HousePlug, LogOut, Menu, ShoppingCart, Store, UserCog } from "lucide-react";
+import {
+  HousePlug,
+  LogOut,
+  Menu,
+  ShoppingCart,
+  Store,
+  UserCog,
+} from "lucide-react";
 import {
   Link,
   useLocation,

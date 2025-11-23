@@ -1,5 +1,6 @@
 import ProductImageUpload from "@/components/admin-view/image-upload";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 import { addFeatureImage, getFeatureImages } from "@/store/common-slice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +20,7 @@ function AdminDashboard() {
         dispatch(getFeatureImages());
         setImageFile(null);
         setUploadedImageUrl("");
+        toast({ title: "Image uploaded successfully!" });
       }
     });
   }
@@ -41,21 +43,29 @@ function AdminDashboard() {
         isCustomStyling={true}
         // isEditMode={currentEditedId !== null}
       />
-      <Button onClick={handleUploadFeatureImage} className="mt-5 w-full">
+      <Button
+        onClick={handleUploadFeatureImage}
+        className="mt-5 w-full"
+        disabled={!uploadedImageUrl || imageLoadingState} 
+      >
         Upload
       </Button>
-      <div className="flex flex-col gap-4 mt-5">
-        {featureImageList && featureImageList.length > 0
-          ? featureImageList.map((featureImgItem, index) => (
-              <div className="relative" key={featureImgItem._id || index}>
-                <img
-                  src={featureImgItem.image}
-                  className="w-full h-[300px] object-cover object-center rounded-lg"
-                  alt="Feature"
-                />
-              </div>
-            ))
-          : null}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        {featureImageList?.map((item, index) => (
+          <div
+            key={item._id || index}
+            className="rounded-xl overflow-hidden shadow-sm border bg-white hover:shadow-md transition"
+          >
+            <div className="aspect-[4/3] w-full">
+              <img
+                src={item.image}
+                alt="Feature"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

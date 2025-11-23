@@ -5,7 +5,7 @@ import {
   ShoppingBasket,
 } from "lucide-react";
 import { Fragment } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 
 const adminSidebarMenuItems = [
@@ -13,40 +13,57 @@ const adminSidebarMenuItems = [
     id: "dashboard",
     label: "Dashboard",
     path: "/admin/dashboard",
-    icon: <LayoutDashboard />,
+    icon: <LayoutDashboard size={20} />,
   },
   {
     id: "products",
     label: "Products",
     path: "/admin/products",
-    icon: <ShoppingBasket />,
+    icon: <ShoppingBasket size={20} />,
   },
   {
     id: "orders",
     label: "Orders",
     path: "/admin/orders",
-    icon: <BadgeCheck />,
+    icon: <BadgeCheck size={20} />,
   },
 ];
 
 function MenuItems({ setOpen }) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   return (
-    <nav className="mt-8 flex-col flex gap-2">
-      {adminSidebarMenuItems.map((menuItem) => (
-        <div
-          key={menuItem.id}
-          onClick={() => {
-            navigate(menuItem.path);
-            setOpen ? setOpen(false) : null;
-          }}
-          className="flex cursor-pointer text-xl items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-        >
-          {menuItem.icon}
-          <span>{menuItem.label}</span>
-        </div>
-      ))}
+    <nav className="mt-8 flex-col flex gap-1">
+      {adminSidebarMenuItems.map((menuItem) => {
+        const isActive = pathname === menuItem.path;
+
+        return (
+          <div
+            key={menuItem.id}
+            onClick={() => {
+              navigate(menuItem.path);
+              setOpen && setOpen(false);
+            }}
+            className={`flex cursor-pointer items-center gap-5 rounded-xl px-4 py-3 my-1 text-[16px] transition-all 
+              ${
+                isActive
+                  ? "bg-primary text-white shadow-md"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }
+            `}
+          >
+            <span
+              className={`transition ${
+                isActive ? "text-white" : "text-muted-foreground"
+              }`}
+            >
+              {menuItem.icon}
+            </span>
+            <span className="font-medium">{menuItem.label}</span>
+          </div>
+        );
+      })}
     </nav>
   );
 }
@@ -56,27 +73,34 @@ function AdminSideBar({ open, setOpen }) {
 
   return (
     <Fragment>
+      {/* Mobile Sidebar */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="w-64">
-          <div className="flex flex-col h-full">
-            <SheetHeader className="border-b">
-              <SheetTitle className="flex gap-2 mt-5 mb-5">
-                <ChartNoAxesCombined size={30} />
-                <h1 className="text-2xl font-extrabold">Admin Panel</h1>
-              </SheetTitle>
-            </SheetHeader>
+        <SheetContent side="left" className="w-64 p-0 border-r flex flex-col">
+          <SheetHeader className="border-b px-6 py-5 bg-muted/50">
+            <SheetTitle className="flex items-center gap-3">
+              <ChartNoAxesCombined size={32} className="text-primary" />
+              <h1 className="text-xl font-bold tracking-tight">Admin Panel</h1>
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="px-4">
             <MenuItems setOpen={setOpen} />
           </div>
         </SheetContent>
       </Sheet>
-      <aside className="hidden w-64 flex-col border-r bg-background p-6 lg:flex">
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-64 flex-col border-r bg-background py-6 px-6 shadow-sm">
         <div
           onClick={() => navigate("/admin/dashboard")}
-          className="flex cursor-pointer items-center gap-2"
+          className="flex cursor-pointer items-center gap-3 mb-6"
         >
-          <ChartNoAxesCombined size={30} />
-          <h1 className="text-2xl font-extrabold">Admin Panel</h1>
+          <ChartNoAxesCombined size={32} className="text-primary" />
+          <h1 className="text-2xl font-extrabold tracking-tight">
+            Admin Panel
+          </h1>
         </div>
+
         <MenuItems />
       </aside>
     </Fragment>
