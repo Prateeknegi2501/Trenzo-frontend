@@ -33,12 +33,8 @@ function App() {
     dispatch(checkAuth());
   }, [dispatch]);
 
-  if (isLoading) return <Skeleton className="w-full min-h-screen bg-white" />;
-
-  console.log(isLoading, user);
-
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col min-h-screen overflow-hidden bg-white">
       <Routes>
         <Route
           path="/"

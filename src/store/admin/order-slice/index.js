@@ -1,3 +1,4 @@
+import adminServices from "@/services/adminServices";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -9,36 +10,26 @@ const initialState = {
 export const getAllOrdersForAdmin = createAsyncThunk(
   "/order/getAllOrdersForAdmin",
   async () => {
-    const response = await axios.get(
-      `http://localhost:5000/api/admin/orders/get`
-    );
-
-    return response.data;
+    const response = await adminServices.getAllOrders();
+    return response;
   }
 );
 
 export const getOrderDetailsForAdmin = createAsyncThunk(
   "/order/getOrderDetailsForAdmin",
   async (id) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/admin/orders/details/${id}`
-    );
+    const response = await adminServices.getOrderDetails(id);
 
-    return response.data;
+    return response;
   }
 );
 
 export const updateOrderStatus = createAsyncThunk(
   "/order/updateOrderStatus",
   async ({ id, orderStatus }) => {
-    const response = await axios.put(
-      `http://localhost:5000/api/admin/orders/update/${id}`,
-      {
-        orderStatus,
-      }
-    );
+    const response = await adminServices.updateOrderStatus({ id, orderStatus });
 
-    return response.data;
+    return response;
   }
 );
 

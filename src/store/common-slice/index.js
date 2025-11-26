@@ -1,3 +1,4 @@
+import { commonServices } from "@/services/commonServices";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -9,23 +10,17 @@ const initialState = {
 export const getFeatureImages = createAsyncThunk(
   "/order/getFeatureImages",
   async () => {
-    const response = await axios.get(
-      `http://localhost:5000/api/common/feature/get`
-    );
+    const response = await commonServices.getFeatureImages();
 
-    return response.data;
+    return response;
   }
 );
 
 export const addFeatureImage = createAsyncThunk(
   "/order/addFeatureImage",
   async (image) => {
-    const response = await axios.post(
-      `http://localhost:5000/api/common/feature/add`,
-      { image }
-    );
-
-    return response.data;
+    const response = await commonServices.addFeatureImages(image);
+    return response;
   }
 );
 

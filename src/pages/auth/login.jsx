@@ -4,7 +4,7 @@ import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const initialState = {
   email: "",
@@ -15,15 +15,23 @@ function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   function onSubmit(event) {
     event.preventDefault();
+    setLoading(true);
 
     dispatch(loginUser(formData)).then((data) => {
+      setLoading(false);
+
       if (data?.payload?.success) {
-        toast({
-          title: data?.payload?.message,
-        });
+        toast({ title: data?.payload?.message });
+
+        // ⭐ Delay navigation so no white flash
+        setTimeout(() => {
+          navigate("/");
+        }, 300);
       } else {
         toast({
           title: data?.payload?.message,
@@ -40,13 +48,16 @@ function AuthLogin() {
           Sign in to your account
         </h1>
       </div>
+
       <CommonForm
         formControls={loginFormControls}
-        buttonText={"Sign In"}
+        buttonText={loading ? "Please wait..." : "Sign In"}
         formData={formData}
+        disabled={loading}
         setFormData={setFormData}
         onSubmit={onSubmit}
       />
+
       <div className="text-center">
         <p className="mt-2">
           Don't have an account
@@ -58,6 +69,8 @@ function AuthLogin() {
           </Link>
         </p>
       </div>
+
+   
     </div>
   );
 }

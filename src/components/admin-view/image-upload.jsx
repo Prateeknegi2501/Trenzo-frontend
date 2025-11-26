@@ -7,6 +7,7 @@ import axios from "axios";
 import { Skeleton } from "../ui/skeleton";
 import { toast } from "../ui/use-toast";
 import imageCompression from "browser-image-compression";
+import API_URLS from "@/services/apiUrl";
 
 function ProductImageUpload({
   imageFile,
@@ -46,10 +47,7 @@ function ProductImageUpload({
       const data = new FormData();
       data.append("my_file", compressedFile);
 
-      const response = await axios.post(
-        "http://localhost:5000/api/admin/products/upload-image",
-        data
-      );
+      const response = await axios.post(API_URLS.COMMON.UPLOAD_IMAGE, data);
 
       if (response.data.success) {
         setUploadedImageUrl(response.data.result.url);
@@ -89,7 +87,7 @@ function ProductImageUpload({
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          disabled={isEditMode }
+          disabled={isEditMode}
         />
 
         {/* Empty State */}

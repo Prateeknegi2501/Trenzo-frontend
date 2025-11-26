@@ -1,3 +1,5 @@
+import API_URLS from "@/services/apiUrl";
+import { authServices } from "@/services/authServices";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -11,15 +13,9 @@ export const registerUser = createAsyncThunk(
   "/auth/register",
 
   async (formData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/auth/register",
-      formData,
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await authServices.registerUser(formData);
 
-    return response.data;
+    return response;
   }
 );
 
@@ -27,15 +23,8 @@ export const loginUser = createAsyncThunk(
   "/auth/login",
 
   async (formData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/auth/login",
-      formData,
-      {
-        withCredentials: true,
-      }
-    );
-
-    return response.data;
+    const response = await authServices.loginUser(formData);
+    return response;
   }
 );
 
@@ -44,14 +33,14 @@ export const logoutUser = createAsyncThunk(
 
   async () => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/logout",
+      API_URLS.AUTH.LOGOUT,
       {},
       {
         withCredentials: true,
       }
     );
 
-    return response.data;
+    return response;
   }
 );
 
@@ -59,18 +48,15 @@ export const checkAuth = createAsyncThunk(
   "/auth/checkauth",
 
   async () => {
-    const response = await axios.get(
-      "http://localhost:5000/api/auth/check-auth",
-      {
-        withCredentials: true,
-        headers: {
-          "Cache-Control":
-            "no-store, no-cache, must-revalidate, proxy-revalidate",
-        },
-      }
-    );
+    const response = await axios.get(API_URLS.COMMON.CHECK_AUTH, {
+      withCredentials: true,
+      headers: {
+        "Cache-Control":
+          "no-store, no-cache, must-revalidate, proxy-revalidate",
+      },
+    });
 
-    return response.data;
+    return response;
   }
 );
 

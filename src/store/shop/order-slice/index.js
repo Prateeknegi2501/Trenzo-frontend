@@ -1,3 +1,4 @@
+import { shoppingServices } from "@/services/shopingServices";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -12,14 +13,9 @@ const initialState = {
 export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
   async (orderData) => {
-    console.log("****orderData from store****", orderData);
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/create",
-      orderData
-    );
-
-    console.log("****response of order api******",response.data);
-    return response.data;
+    const response = await shoppingServices.createOrder(orderData);
+    console.log("****response of order api******", response);
+    return response;
   }
 );
 
@@ -27,38 +23,31 @@ export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
   async ({ paymentId, payerId, orderId }) => {
     console.log("log in api ", paymentId, payerId, orderId);
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/capture",
-      {
-        paymentId,
-        payerId,
-        orderId,
-      }
-    );
+    const response = await shoppingServices.capturePayment({
+      paymentId,
+      payerId,
+      orderId,
+    });
 
-    return response.data;
+    return response;
   }
 );
 
 export const getAllOrdersByUserId = createAsyncThunk(
   "/order/getAllOrdersByUserId",
   async (userId) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/order/list/${userId}`
-    );
+    const response = await shoppingServices.getOrdersByUser(userId);
 
-    return response.data;
+    return response;
   }
 );
 
 export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (id) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/order/details/${id}`
-    );
+    const response = await shoppingServices.getOrderDetails(id);
 
-    return response.data;
+    return response;
   }
 );
 

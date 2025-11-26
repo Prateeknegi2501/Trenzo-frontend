@@ -17,15 +17,21 @@ function AuthRegister() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   function onSubmit(event) {
     event.preventDefault();
+    setLoading(true);
+
     dispatch(registerUser(formData)).then((data) => {
+      setLoading(false);
+
       if (data?.payload?.success) {
-        toast({
-          title: data?.payload?.message,
-        });
-        navigate("/auth/login");
+        toast({ title: data?.payload?.message });
+
+        setTimeout(() => {
+          navigate("/auth/login");
+        }, 300);
       } else {
         toast({
           title: data?.payload?.message,
@@ -35,8 +41,6 @@ function AuthRegister() {
     });
   }
 
-  console.log(formData);
-
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">
@@ -44,13 +48,16 @@ function AuthRegister() {
           Create new account
         </h1>
       </div>
+
       <CommonForm
         formControls={registerFormControls}
-        buttonText={"Sign Up"}
+        buttonText={loading ? "Please wait..." : "Sign Up"}
+        disabled={loading}
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
       />
+
       <div className="text-center">
         <p className="mt-2">
           Already have an account
