@@ -56,7 +56,7 @@ export const checkAuth = createAsyncThunk(
       },
     });
 
-    return response;
+    return response.data;
   }
 );
 

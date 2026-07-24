@@ -1,23 +1,17 @@
 import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Dialog } from "../ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
 import ShoppingOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllOrdersByUserId,
-  getOrderDetails,
-  resetOrderDetails,
-} from "@/store/shop/order-slice";
-import { Badge } from "../ui/badge";
+import { getAllOrdersByUserId, getOrderDetails, resetOrderDetails } from "@/store/shop/order-slice";
+import { Package, ChevronRight } from "lucide-react";
+
+const statusStyles = {
+  confirmed: "bg-green-50 text-green-700 border-green-200",
+  rejected: "bg-red-50 text-red-700 border-red-200",
+  delivered: "bg-blue-50 text-blue-700 border-blue-200",
+  pending: "bg-amber-50 text-amber-700 border-amber-200",
+  "in-process": "bg-purple-50 text-purple-700 border-purple-200",
+};
 
 function ShoppingOrders() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
@@ -37,71 +31,60 @@ function ShoppingOrders() {
     if (orderDetails !== null) setOpenDetailsDialog(true);
   }, [orderDetails]);
 
-  console.log(orderDetails, "orderDetails");
+  if (!orderList?.length) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Package className="w-12 h-12 text-[#e8e4de] mb-4" />
+        <p className="text-sm font-semibold text-[#0a0a0a] mb-1">No orders yet</p>
+        <p className="text-xs text-[#aaa]">Your order history will appear here</p>
+      </div>
+    );
+  }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Order History</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Order Date</TableHead>
-              <TableHead>Order Status</TableHead>
-              <TableHead>Order Price</TableHead>
-              <TableHead>
-                <span className="sr-only">Details</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {orderList && orderList.length > 0
-              ? orderList.map((orderItem) => (
-                  <TableRow>
-                    <TableCell>{orderItem?._id}</TableCell>
-                    <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={`py-1 px-3 ${
-                          orderItem?.orderStatus === "confirmed"
-                            ? "bg-green-500"
-                            : orderItem?.orderStatus === "rejected"
-                            ? "bg-red-600"
-                            : "bg-black"
-                        }`}
-                      >
-                        {orderItem?.orderStatus}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>${orderItem?.totalAmount}</TableCell>
-                    <TableCell>
-                      <Dialog
-                        open={openDetailsDialog}
-                        onOpenChange={() => {
-                          setOpenDetailsDialog(false);
-                          dispatch(resetOrderDetails());
-                        }}
-                      >
-                        <Button
-                          onClick={() =>
-                            handleFetchOrderDetails(orderItem?._id)
-                          }
-                        >
-                          View Details
-                        </Button>
-                        <ShoppingOrderDetailsView orderDetails={orderDetails} />
-                      </Dialog>
-                    </TableCell>
-                  </TableRow>
-                ))
-              : null}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <div className="space-y-3">
+      {orderList.map((orderItem) => {
+        const statusClass = statusStyles[orderItem?.orderStatus] || "bg-gray-50 text-gray-700 border-gray-200";
+        return (
+          <div
+            key={orderItem?._id}
+            className="flex items-center justify-between p-5 border border-[#e8e4de] bg-[#faf9f7] hover:border-[#c8a96e] transition-colors group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-[#f0ede8] flex items-center justify-center flex-shrink-0">
+                <Package className="w-5 h-5 text-[#c8a96e]" />
+              </div>
+              <div>
+                <p className="text-xs text-[#aaa] font-mono mb-0.5">#{orderItem?._id?.slice(-8).toUpperCase()}</p>
+                <p className="text-sm font-semibold text-[#0a0a0a]">
+                  {new Date(orderItem?.orderDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-6">
+              <span className={`text-[10px] font-bold px-2.5 py-1 border tracking-widest uppercase ${statusClass}`}>
+                {orderItem?.orderStatus}
+              </span>
+              <span className="text-sm font-black text-[#0a0a0a]">${orderItem?.totalAmount?.toFixed(2)}</span>
+
+              <Dialog
+                open={openDetailsDialog}
+                onOpenChange={() => { setOpenDetailsDialog(false); dispatch(resetOrderDetails()); }}
+              >
+                <button
+                  onClick={() => handleFetchOrderDetails(orderItem?._id)}
+                  className="flex items-center gap-1 text-xs text-[#888] hover:text-[#c8a96e] transition-colors font-medium group-hover:text-[#c8a96e]"
+                >
+                  Details <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+                <ShoppingOrderDetailsView orderDetails={orderDetails} />
+              </Dialog>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

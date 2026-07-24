@@ -1,8 +1,14 @@
-# React + Vite
+# Trenzo client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This client runs as a Next.js application. The existing React Router and Redux
+application is mounted inside a Next.js catch-all route so all existing URLs
+continue to work.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+npm run dev
+```
+
+Create a production build with `npm run build` and serve it with `npm start`.

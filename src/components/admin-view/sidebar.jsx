@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BadgeCheck,
   ChartNoAxesCombined,
@@ -5,7 +7,7 @@ import {
   ShoppingBasket,
 } from "lucide-react";
 import { Fragment } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { usePathname, useRouter } from "next/navigation";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 
 const adminSidebarMenuItems = [
@@ -30,8 +32,8 @@ const adminSidebarMenuItems = [
 ];
 
 function MenuItems({ setOpen }) {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <nav className="mt-8 flex-col flex gap-1">
@@ -42,7 +44,7 @@ function MenuItems({ setOpen }) {
           <div
             key={menuItem.id}
             onClick={() => {
-              navigate(menuItem.path);
+              router.push(menuItem.path);
               setOpen && setOpen(false);
             }}
             className={`flex cursor-pointer items-center gap-5 rounded-xl px-4 py-3 my-1 text-[16px] transition-all 
@@ -69,11 +71,10 @@ function MenuItems({ setOpen }) {
 }
 
 function AdminSideBar({ open, setOpen }) {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <Fragment>
-      {/* Mobile Sidebar */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="w-64 p-0 border-r flex flex-col">
           <SheetHeader className="border-b px-6 py-5 bg-muted/50">
@@ -89,10 +90,9 @@ function AdminSideBar({ open, setOpen }) {
         </SheetContent>
       </Sheet>
 
-      {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-64 flex-col border-r bg-background py-6 px-6 shadow-sm">
         <div
-          onClick={() => navigate("/admin/dashboard")}
+          onClick={() => router.push("/admin/dashboard")}
           className="flex cursor-pointer items-center gap-3 mb-6"
         >
           <ChartNoAxesCombined size={32} className="text-primary" />

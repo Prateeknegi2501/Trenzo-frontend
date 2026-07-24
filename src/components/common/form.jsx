@@ -1,30 +1,47 @@
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
 
-function CommonForm({
-  formControls,
-  formData,
-  setFormData,
-  onSubmit,
-  buttonText,
-  isBtnDisabled,
-}) {
+function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText, isBtnDisabled, disabled }) {
   function renderInputsByComponentType(getControlItem) {
-    let element = null;
     const value = formData[getControlItem.name] || "";
+    const baseInputClass = "border-[#e8e4de] focus:border-[#c8a96e] focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none bg-white text-[#0a0a0a] placeholder:text-[#bbb] h-11 text-sm";
 
     switch (getControlItem.componentType) {
-      case "input":
-        element = (
+      case "select":
+        return (
+          <Select
+            onValueChange={(value) => setFormData({ ...formData, [getControlItem.name]: value })}
+            value={value}
+          >
+            <SelectTrigger className={`${baseInputClass} w-full`}>
+              <SelectValue placeholder={getControlItem.label} />
+            </SelectTrigger>
+            <SelectContent className="border-[#e8e4de]">
+              {getControlItem.options?.map((optionItem) => (
+                <SelectItem key={optionItem.id} value={optionItem.id} className="text-sm">
+                  {optionItem.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+
+      case "textarea":
+        return (
+          <Textarea
+            name={getControlItem.name}
+            placeholder={getControlItem.placeholder}
+            id={getControlItem.id}
+            value={value}
+            className={`${baseInputClass} h-auto min-h-[80px] py-3`}
+            onChange={(e) => setFormData({ ...formData, [getControlItem.name]: e.target.value })}
+          />
+        );
+
+      default:
+        return (
           <Input
             name={getControlItem.name}
             placeholder={getControlItem.placeholder}
@@ -32,96 +49,31 @@ function CommonForm({
             type={getControlItem.type}
             value={value}
             maxLength={getControlItem.maxLength}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
+            className={baseInputClass}
+            onChange={(e) => setFormData({ ...formData, [getControlItem.name]: e.target.value })}
           />
         );
-
-        break;
-      case "select":
-        element = (
-          <Select
-            onValueChange={(value) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: value,
-              })
-            }
-            value={value}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={getControlItem.label} />
-            </SelectTrigger>
-            <SelectContent>
-              {getControlItem.options && getControlItem.options.length > 0
-                ? getControlItem.options.map((optionItem) => (
-                    <SelectItem key={optionItem.id} value={optionItem.id}>
-                      {optionItem.label}
-                    </SelectItem>
-                  ))
-                : null}
-            </SelectContent>
-          </Select>
-        );
-
-        break;
-      case "textarea":
-        element = (
-          <Textarea
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.id}
-            value={value}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
-          />
-        );
-
-        break;
-
-      default:
-        element = (
-          <Input
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.name}
-            type={getControlItem.type}
-            value={value}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
-          />
-        );
-        break;
     }
-
-    return element;
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <div className="flex flex-col gap-3">
-        {formControls.map((controlItem) => (
-          <div className="grid w-full gap-1.5" key={controlItem.name}>
-            <Label className="mb-1">{controlItem.label}</Label>
-            {renderInputsByComponentType(controlItem)}
-          </div>
-        ))}
-      </div>
-      <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full">
+    <form onSubmit={onSubmit} className="space-y-5">
+      {formControls.map((controlItem) => (
+        <div key={controlItem.name} className="space-y-1.5">
+          <Label className="text-xs font-semibold text-[#0a0a0a] uppercase tracking-[0.1em]">
+            {controlItem.label}
+          </Label>
+          {renderInputsByComponentType(controlItem)}
+        </div>
+      ))}
+
+      <button
+        disabled={isBtnDisabled || disabled}
+        type="submit"
+        className="w-full py-3.5 bg-[#0a0a0a] text-white text-xs font-bold tracking-[0.2em] uppercase hover:bg-[#c8a96e] hover:text-[#0a0a0a] transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+      >
         {buttonText || "Submit"}
-      </Button>
+      </button>
     </form>
   );
 }
