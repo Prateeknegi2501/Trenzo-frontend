@@ -1,6 +1,6 @@
 // src/services/apiUrls.js
 
-export const BASE_URL = "https://trenzo-backend.onrender.com";
+export const BASE_URL = "https://trenzo-backend-1.onrender.com";
 
 const API_URLS = {
   AUTH: {
