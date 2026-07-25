@@ -201,12 +201,6 @@ function ShoppingHome() {
               Shop Now
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button
-              onClick={() => router.push("/shop/listing")}
-              className="flex items-center gap-2 border border-white/40 text-white px-8 py-3.5 text-sm font-medium tracking-wider uppercase hover:border-[#c8a96e] hover:text-[#c8a96e] transition-colors duration-300"
-            >
-              Explore
-            </button>
           </div>
         </div>
 

@@ -50,7 +50,12 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText,
             value={value}
             maxLength={getControlItem.maxLength}
             className={baseInputClass}
-            onChange={(e) => setFormData({ ...formData, [getControlItem.name]: e.target.value })}
+            onChange={(e) => {
+              const val = getControlItem.type === "tel"
+                ? e.target.value.replace(/\D/g, "").slice(0, 10)
+                : e.target.value;
+              setFormData({ ...formData, [getControlItem.name]: val });
+            }}
           />
         );
     }

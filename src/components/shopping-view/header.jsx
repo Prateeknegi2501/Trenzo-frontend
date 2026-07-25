@@ -17,7 +17,6 @@ import {
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
-import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState, useRef } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { gsap } from "gsap";
@@ -68,7 +67,6 @@ function MenuItems({ onClose }) {
 function HeaderRightContent({ onClose }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
-  const [openCartSheet, setOpenCartSheet] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -91,23 +89,17 @@ function HeaderRightContent({ onClose }) {
         <Search className="w-5 h-5" />
       </button>
 
-      <Sheet open={openCartSheet} onOpenChange={setOpenCartSheet}>
-        <button
-          onClick={() => setOpenCartSheet(true)}
-          className="relative p-2 text-[#1a1a1a] hover:text-[#c8a96e] transition-colors"
-        >
-          <ShoppingBag className="w-5 h-5" />
-          {cartCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#c8a96e] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-              {cartCount}
-            </span>
-          )}
-        </button>
-        <UserCartWrapper
-          setOpenCartSheet={setOpenCartSheet}
-          cartItems={cartItems?.items?.length > 0 ? cartItems.items : []}
-        />
-      </Sheet>
+      <button
+        onClick={() => { router.push("/shop/cart"); onClose?.(); }}
+        className="relative p-2 text-[#1a1a1a] hover:text-[#c8a96e] transition-colors"
+      >
+        <ShoppingBag className="w-5 h-5" />
+        {cartCount > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#c8a96e] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+            {cartCount}
+          </span>
+        )}
+      </button>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

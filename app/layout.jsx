@@ -4,6 +4,9 @@ import Providers from "@/components/providers";
 export const metadata = {
   title: "Trenzo",
   description: "Modern fashion shopping experience",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }) {

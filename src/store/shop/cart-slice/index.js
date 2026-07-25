@@ -23,7 +23,7 @@ export const addToCart = createAsyncThunk(
 export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
   async (userId) => {
-    const response = await shoppingServices.fetchAllAddresses(userId);
+    const response = await shoppingServices.fetchCartItems(userId);
     return response;
   }
 );

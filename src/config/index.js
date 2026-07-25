@@ -211,9 +211,9 @@ export const addressFormControls = [
     label: "Phone",
     name: "phone",
     componentType: "input",
-    type: "text",
+    type: "tel",
     placeholder: "Enter your phone number",
-    maxLength: 14,
+    maxLength: 10,
   },
   {
     label: "Notes",

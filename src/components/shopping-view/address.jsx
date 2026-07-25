@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addNewAddress, deleteAddress, editaAddress, fetchAllAddresses } from "@/store/shop/address-slice";
 import AddressCard from "./address-card";
 import { useToast } from "../ui/use-toast";
-import { Plus, X } from "lucide-react";
+import { Plus, X, LocateFixed, Loader2 } from "lucide-react";
 
 const initialAddressFormData = { address: "", city: "", phone: "", pincode: "", notes: "" };
 
@@ -13,6 +13,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   const [formData, setFormData] = useState(initialAddressFormData);
   const [currentEditedId, setCurrentEditedId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [locating, setLocating] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { addressList } = useSelector((state) => state.shopAddress);
@@ -59,6 +60,44 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
       notes: getCuurentAddress?.notes,
     });
     setShowForm(true);
+  }
+
+  async function handleUseCurrentLocation() {
+    if (!navigator.geolocation) {
+      return toast({ title: "Geolocation not supported by your browser", variant: "destructive" });
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const data = await res.json();
+          const a = data.address || {};
+          setFormData((prev) => ({
+            ...prev,
+            address: [
+              a.house_number,
+              a.road || a.pedestrian || a.street,
+              a.suburb || a.neighbourhood,
+            ].filter(Boolean).join(", ") || prev.address,
+            city: a.city || a.town || a.village || a.county || prev.city,
+            pincode: a.postcode || prev.pincode,
+          }));
+          toast({ title: "Location detected — please verify the details" });
+        } catch {
+          toast({ title: "Could not fetch address details", variant: "destructive" });
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => {
+        setLocating(false);
+        toast({ title: "Location access denied", variant: "destructive" });
+      }
+    );
   }
 
   function isFormValid() {
@@ -116,6 +155,15 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
               <X className="w-5 h-5" />
             </button>
           </div>
+          <button
+            type="button"
+            onClick={handleUseCurrentLocation}
+            disabled={locating}
+            className="w-full mb-4 flex items-center justify-center gap-2 py-2.5 border border-dashed border-[#c8a96e] text-[#c8a96e] text-xs font-bold tracking-widest uppercase hover:bg-[#fdf8f0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <LocateFixed className="w-4 h-4" />}
+            {locating ? "Detecting location..." : "Use Current Location"}
+          </button>
           <CommonForm
             formControls={addressFormControls}
             formData={formData}
